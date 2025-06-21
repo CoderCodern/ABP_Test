@@ -36,5 +36,10 @@ namespace TestABP.APIs.CloudFolders
         {
             return _cloudFolderManager.Update(input);
         }
+
+        public Task<string> UpdateCloudinaryFolder(string fromPath, string toPath)
+        {
+            return _cloudFolderManager.UpdateCloudinaryFolder(fromPath, toPath);
+        }
     }
 }

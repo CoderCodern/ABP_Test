@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services;
@@ -239,7 +238,6 @@ namespace TestABP.Domain.CloudFolders
             }
             catch (UserFriendlyException)
             {
-
                 throw;
             }
         }
@@ -390,6 +388,30 @@ namespace TestABP.Domain.CloudFolders
                 return true;
             else
                 return false;
+        }
+
+        public async Task<string> UpdateCloudinaryFolder(string fromPath, string toPath)
+        {
+            try
+            {
+                // Update from Test3/Test3.1 to Test3/Test3.2 (successfully)
+                // Update from Test3/Test3.1 (have asset inside child folder) to Test4/Test4.1 (create new folder Test4/Test4.1 with asset inside and old one turns to Test3)
+                var cloudinary = new Cloudinary(_cloudinaryConfig.CloudinaryAccountConfig());
+                var updateFolderResult = await cloudinary.RenameFolderAsync(fromPath, toPath);
+
+                if (updateFolderResult != null && updateFolderResult.To.Path!= null)
+                {
+                    return updateFolderResult.To.Path;
+                }
+                else
+                {
+                    return updateFolderResult.From.Path;
+                }
+            }
+            catch (UserFriendlyException)
+            {
+                throw;
+            }
         }
 
         #endregion
