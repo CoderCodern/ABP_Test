@@ -222,11 +222,14 @@ namespace TestABP.Domain.CloudFolders
                     splitCombineName[countSlash] = input.Name;
                     folder.CombineName = string.Join('/', splitCombineName);
 
-                    //await UpdateCloudinaryFolder(oldCloudName, cloudFolder.CombineName);
-
                     await _workScope.UpdateAsync<CloudFolder>(folder);
 
                     await RenameChildCombineName(folders, input, folder.CombineName);
+
+                    if (input.IsSyncToCloud == true)
+                    {
+                        await UpdateCloudinaryFolder(oldCloudName, folder.CombineName);
+                    }
                 }
 
                 folder.Name = input.Name;
@@ -390,22 +393,23 @@ namespace TestABP.Domain.CloudFolders
                 return false;
         }
 
-        public async Task<string> UpdateCloudinaryFolder(string fromPath, string toPath)
+        /// <summary>
+        /// Renames a folder in Cloudinary from the specified source path to the target path.
+        /// </summary>
+        private async Task<string> UpdateCloudinaryFolder(string fromPath, string toPath)
         {
             try
             {
-                // Update from Test3/Test3.1 to Test3/Test3.2 (successfully)
-                // Update from Test3/Test3.1 (have asset inside child folder) to Test4/Test4.1 (create new folder Test4/Test4.1 with asset inside and old one turns to Test3)
                 var cloudinary = new Cloudinary(_cloudinaryConfig.CloudinaryAccountConfig());
                 var updateFolderResult = await cloudinary.RenameFolderAsync(fromPath, toPath);
 
-                if (updateFolderResult != null && updateFolderResult.To.Path!= null)
+                if (updateFolderResult != null && updateFolderResult.To?.Path != null)
                 {
                     return updateFolderResult.To.Path;
                 }
                 else
                 {
-                    return updateFolderResult.From.Path;
+                    return updateFolderResult.From?.Path;
                 }
             }
             catch (UserFriendlyException)

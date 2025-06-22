@@ -9,6 +9,6 @@ namespace TestABP.APIs.CloudFolders
         Task<TreeFolderDto> GetAll(FolderFilterDto input);
         Task<CloudFolderDto> GetDetail(long folderId);
         Task<CreateCloudFolderDto> Create(CreateCloudFolderDto input);
-        Task<string> UpdateCloudinaryFolder(string fromPath, string toPath);
+        Task<UpdateCloudFolderDto> Update(UpdateCloudFolderDto input);
     }
 }
